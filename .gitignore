@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & Packaging
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# PyTorch / Deep Learning Checkpoints & Weights
+checkpoints/
+results/
+*.pt
+*.pth
+*.t7
+
+# Datasets & Large Experimental Data
+datasets/
+*.tif
+*.tiff
+
+# Preserve documentation images
+!imgs/*
+BCGAN*.png
+
+# Logging & Monitoring
+wandb/
+runs/
+*.log
+
+# IDE & OS Specific
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*~
+debug*
