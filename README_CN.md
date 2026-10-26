@@ -60,18 +60,18 @@ pip install -r requirements.txt
 
 ## 3. 演示教程 (Demo)
 
-代码库内已内置**轻量测试数据集**（6 张微流控运动模糊单细胞明场图）及**预训练去模糊模型**。
+代码库内已内置**样本数据集**（`jurkat_mini_sample`）及**预训练去模糊模型**。
 
 ### 内置演示资产
 * **预训练模型 ($G_A: \text{模糊} \to \text{清晰}$)**：[`./checkpoints/jurkat_bcgan/latest_net_G_A.pth`](file:///d:/BCGAN/checkpoints/jurkat_bcgan/latest_net_G_A.pth)
-* **演示测试图像**：[`./datasets/demo_sample/testA/`](file:///d:/BCGAN/datasets/demo_sample/testA/)
+* **样本图像**：[`./datasets/jurkat_mini_sample/trainA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/trainA/) (微流控运动模糊单细胞明场图)
 
 ### 运行演示推理
 
 #### 方式一：GPU 运行（默认推荐）
 ```powershell
 python test.py `
-  --dataroot "./datasets/demo_sample/testA" `
+  --dataroot "./datasets/jurkat_mini_sample/trainA" `
   --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
   --model test `
@@ -79,6 +79,7 @@ python test.py `
   --input_nc 1 `
   --output_nc 1 `
   --no_dropout `
+  --num_test 10 `
   --results_dir "./results" `
   --epoch latest `
   --gpu_ids 0
@@ -87,7 +88,7 @@ python test.py `
 #### 方式二：纯 CPU 运行（无需显卡）
 ```powershell
 python test.py `
-  --dataroot "./datasets/demo_sample/testA" `
+  --dataroot "./datasets/jurkat_mini_sample/trainA" `
   --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
   --model test `
@@ -95,6 +96,7 @@ python test.py `
   --input_nc 1 `
   --output_nc 1 `
   --no_dropout `
+  --num_test 10 `
   --results_dir "./results" `
   --epoch latest `
   --gpu_ids -1
@@ -105,7 +107,7 @@ python test.py `
   ```text
   loading the model from ./checkpoints\jurkat_bcgan\latest_net_G_A.pth
   processing (0000)-th image...
-  processing (0005)-th image...
+  processing (0009)-th image...
   ```
 * **去模糊恢复图像**：保存在 [`./results/jurkat_bcgan/test_latest/images/`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/images/)
   * `*_real.png`：输入的微流控模糊细胞原图。
@@ -113,8 +115,8 @@ python test.py `
 * **交互式 HTML 报告**：自动生成于 [`./results/jurkat_bcgan/test_latest/index.html`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/index.html)。
 
 ### 预期演示运行耗时 (Expected Run Time)
-* **GPU (RTX 4090)**：处理 6 张图像约 **2–4 秒**。
-* **CPU (Intel i7)**：处理 6 张图像约 **15–25 秒**。
+* **GPU (RTX 4090)**：处理 10 张测试图像约 **2–4 秒**。
+* **CPU (Intel i7)**：处理 10 张测试图像约 **15–25 秒**。
 
 ---
 

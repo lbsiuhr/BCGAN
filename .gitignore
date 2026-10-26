@@ -24,7 +24,6 @@ results/
 
 # Datasets & Large Experimental Data
 datasets/*
-!datasets/demo_sample/
 !datasets/jurkat_mini_sample/
 *.tif
 *.tiff
