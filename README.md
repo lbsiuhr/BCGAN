@@ -1,88 +1,166 @@
 # BCGAN: Blurred-Morphology-Constrained CycleGAN
 
-Official PyTorch implementation of **BCGAN (Blurred-Morphology-Constrained CycleGAN)** for paper:  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
+
+Official PyTorch implementation of **BCGAN (Blurred-Morphology-Constrained CycleGAN)** for the paper:  
 **"Motion-blur-tolerant imaging flow cytometry extends the throughput–sensitivity frontier"**
 
-[English](README.md) | [中文](README_CN.md)
+[English](README.md) | [中文说明](README_CN.md)
 
 ---
 
-## 1. Environment Setup
+## 1. System Requirements
+
+### Operating Systems & Software Dependencies
+* **Tested Operating System**:
+  * Windows 10 / 11 64-bit
+* **Software Dependencies**:
+  * Python >= 3.10
+  * PyTorch >= 2.0.0
+  * Torchvision >= 0.15.0
+  * Additional packages listed in [`requirements.txt`](file:///d:/BCGAN/requirements.txt)
+
+### Hardware Tested
+* **Workstation Configuration (Used for paper training and experiments)**:
+  * CPU: Intel Core i7-12700K
+  * GPU: NVIDIA GeForce RTX 4090 (24 GB VRAM)
+  * Memory: 32 GB RAM
+* **Inference / Demo Requirements**:
+  * Tested on both NVIDIA GPU (`--gpu_ids 0`) and standard CPU mode (`--gpu_ids -1`).
+
+---
+
+## 2. Installation Guide
+
+### Installation Steps
 
 ```bash
+# 1. Clone repository
+git clone https://github.com/lbsiuhr/BCGAN.git
+cd BCGAN
+
+# 2. Create and activate Conda environment
 conda create -n bcgan python=3.10 -y
 conda activate bcgan
+
+# 3. Install PyTorch with CUDA (or CPU version)
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# 4. Install other dependencies
 pip install -r requirements.txt
 ```
 
----
-
-## 2. Dataset Structure
-
-Organize dataset directories under `./datasets/[dataset_name]`:
-
-```text
-datasets/jurkat/
-├── trainA/          # Blurred single-cell images (Domain A)
-├── trainB/          # In-focus cell images (Domain B, unpaired)
-├── masks_visible/   # Corresponding segmentation masks for trainA
-└── testA/           # Blurred cell images for inference
-```
-
-> **Note**: Brightfield images use `--input_nc 1 --output_nc 1`. Horizontal flip is disabled by default (`--no_flip`) due to directional fluidic flow.
+### Estimated Install Time
+* Approximately **5–10 minutes** on a standard desktop with normal network connectivity.
 
 ---
 
-## 3. Training
+## 3. Demo
 
-### Option A: Offline HTML Logging (Recommended)
+A demo dataset and pre-trained Jurkat deblurring model are included directly in this repository.
 
-```powershell
-python train.py `
-  --dataroot "./datasets/jurkat_mini_sample" `
-  --mask_dataroot "./datasets/jurkat_mini_sample/masks_visible" `
-  --name jurkat_bcgan `
-  --model cycle_gan `
-  --display_id 1 `
-  --batch_size 1 `
-  --input_nc 1 `
-  --output_nc 1 `
-  --lr 0.0002 `
-  --lambda_physics 1.5 `
-  --physics_kernels 15,20,23,27 `
-  --weight_dice 1.0 `
-  --weight_proj 1.5 `
-  --phys_warmup_start 0 `
-  --phys_warmup_end 3 `
-  --phys_decay_start 100 `
-  --phys_decay_end 200 `
-  --n_epochs 100 `
-  --n_epochs_decay 100 `
-  --gpu_ids 0
-```
-Outputs and comparative visuals are automatically rendered to `./checkpoints/jurkat_bcgan/web/index.html`.
+### Included Demo Assets
+* **Pre-trained Model ($G_A: \text{Blur} \to \text{Sharp}$)**: [`./checkpoints/jurkat_bcgan/latest_net_G_A.pth`](file:///d:/BCGAN/checkpoints/jurkat_bcgan/latest_net_G_A.pth)
+* **Demo Images**: [`./datasets/demo_sample/testA/`](file:///d:/BCGAN/datasets/demo_sample/testA/) (6 microfluidic blurred cell images)
 
-### Option B: Real-Time Visdom Dashboard
+### Running Demo Inference
 
-1. Start server in a separate terminal: `python -m visdom.server -p 8097`
-2. Change `--display_id 0` to `--display_id 1` in the training command, and open `http://localhost:8097`.
-
----
-
-## 4. Testing / Inference
-
+#### GPU Mode (Default):
 ```powershell
 python test.py `
-  --dataroot "./datasets/jurkat" `
+  --dataroot "./datasets/demo_sample/testA" `
+  --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
-  --model cycle_gan `
-  --phase test `
+  --model test `
+  --model_suffix _A `
   --input_nc 1 `
   --output_nc 1 `
-  --results_dir "./results/" `
-  --epoch latest
+  --no_dropout `
+  --results_dir "./results" `
+  --epoch latest `
+  --gpu_ids 0
 ```
-Restored images are saved to `./results/jurkat_bcgan/test_latest/images/`.
+
+#### CPU Mode (No GPU required):
+```powershell
+python test.py `
+  --dataroot "./datasets/demo_sample/testA" `
+  --checkpoints_dir "./checkpoints" `
+  --name jurkat_bcgan `
+  --model test `
+  --model_suffix _A `
+  --input_nc 1 `
+  --output_nc 1 `
+  --no_dropout `
+  --results_dir "./results" `
+  --epoch latest `
+  --gpu_ids -1
+```
+
+### Expected Output
+* **Console Output**:
+  ```text
+  loading the model from ./checkpoints\jurkat_bcgan\latest_net_G_A.pth
+  processing (0000)-th image...
+  processing (0005)-th image...
+  ```
+* **Restored Images**: Saved in [`./results/jurkat_bcgan/test_latest/images/`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/images/)
+  * `*_real.png`: Original blurred input image.
+  * `*_fake.png`: Restored in-focus cell image.
+* **HTML Summary**: Generated at [`./results/jurkat_bcgan/test_latest/index.html`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/index.html).
+
+### Expected Run Time
+* **GPU (RTX 4090)**: ~2–4 seconds for 6 images.
+* **CPU (Intel i7)**: ~15–25 seconds for 6 images.
+
+---
+
+## 4. Instructions for Use
+
+### Running on Custom Data
+1. Prepare single-cell brightfield images:
+   * **Format**: Single-channel 8-bit grayscale (`.png`, `.tif`, or `.jpg`).
+   * **Image Dimensions**: Flexible (e.g., 128×128, 256×256, 512×512; arbitrary dimensions supported, preferably multiples of 4).
+2. Place images in `./datasets/[your_dataset]/testA/`.
+3. Run `test.py` pointing `--dataroot` to your test folder.
+
+### Custom Training
+1. Organize your training data:
+   ```text
+   datasets/[dataset_name]/
+   ├── trainA/          # Blurred single-cell images
+   ├── trainB/          # In-focus single-cell images (unpaired)
+   └── masks_visible/   # Corresponding masks for trainA
+   ```
+2. Run training:
+   ```powershell
+   python train.py `
+     --dataroot "./datasets/jurkat_mini_sample" `
+     --mask_dataroot "./datasets/jurkat_mini_sample/masks_visible" `
+     --name jurkat_bcgan `
+     --model cycle_gan `
+     --display_id 1 `
+     --batch_size 1 `
+     --input_nc 1 `
+     --output_nc 1 `
+     --lr 0.0002 `
+     --lambda_physics 1.5 `
+     --physics_kernels 15,20,23,27 `
+     --weight_dice 1.0 `
+     --weight_proj 1.5 `
+     --phys_warmup_start 0 `
+     --phys_warmup_end 3 `
+     --phys_decay_start 100 `
+     --phys_decay_end 200 `
+     --n_epochs 100 `
+     --n_epochs_decay 100 `
+     --gpu_ids 0
+   ```
+
+### Reproduction of Results
+Refer to **Section 4.7 (Network training and inference)** in the manuscript for quantitative training procedures, hyperparameter schedules, and evaluation metrics.
 
 ---
 
@@ -90,15 +168,22 @@ Restored images are saved to `./results/jurkat_bcgan/test_latest/images/`.
 
 | Argument | Default | Description |
 | :--- | :---: | :--- |
-| `--lambda_physics` | `1.5` | Overall weight of the blurred-morphology constraint |
-| `--physics_kernels`| `20,15,23,27` | Kernels simulating velocity blur along the flow axis |
+| `--lambda_physics` | `1.5` | Weight of the blurred-morphology constraint |
+| `--physics_kernels`| `15,20,23,27` | Kernels simulating velocity blur along the flow axis |
 | `--weight_dice` | `1.0` | Weight for Dice mask overlap constraint |
-| `--weight_proj` | `1.5` | Weight for direct Y-axis projection alignment |
-| `--phys_decay_start/end` | `100 / 200` | Start and end epochs for linear decay of the physics constraint |
+| `--weight_proj` | `1.5` | Weight for vertical projection alignment |
+| `--phys_decay_start/end` | `100 / 200` | Start and end epochs for decay of physics constraint |
+| `--no_flip` | `True` | Recommended: fluidic flow direction is non-symmetric |
 
 ---
 
-## 6. Citation
+## 6. License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 7. Citation
 
 ```bibtex
 @article{fan2026motion,
@@ -111,6 +196,6 @@ Restored images are saved to `./results/jurkat_bcgan/test_latest/images/`.
 
 ---
 
-## 7. Acknowledgments
+## 8. Acknowledgments
 
-This repository is built upon [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
+Based on [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
