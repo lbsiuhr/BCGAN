@@ -30,7 +30,6 @@ datasets/*
 
 # Preserve documentation images
 !imgs/*
-BCGAN*.png
 
 # Logging & Monitoring
 wandb/
