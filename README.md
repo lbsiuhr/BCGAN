@@ -15,12 +15,12 @@ Official PyTorch implementation of **BCGAN (Blurred-Morphology-Constrained Cycle
 
 ### Operating Systems & Software Dependencies
 * **Tested Operating System**:
-  * Windows 10 / 11 64-bit
+  * Windows 10 / 11 (64-bit)
 * **Software Dependencies**:
   * Python >= 3.10
   * PyTorch >= 2.0.0
   * Torchvision >= 0.15.0
-  * Additional packages listed in [`requirements.txt`](file:///d:/BCGAN/requirements.txt)
+  * Additional packages listed in [`requirements.txt`](requirements.txt)
 
 ### Hardware Tested
 * **Workstation Configuration (Used for paper training and experiments)**:
@@ -45,7 +45,7 @@ cd BCGAN
 conda create -n bcgan python=3.10 -y
 conda activate bcgan
 
-# 3. Install PyTorch with CUDA (or CPU version)
+# 3. Install PyTorch with CUDA (or CPU version from pytorch.org)
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
 # 4. Install other dependencies
@@ -53,67 +53,57 @@ pip install -r requirements.txt
 ```
 
 ### Estimated Install Time
-* Approximately **5–10 minutes** on a standard desktop with normal network connectivity.
+* Approximately **5–10 minutes** on a standard desktop computer with normal network connectivity.
 
 ---
 
 ## 3. Demo
 
-A sample dataset (`jurkat_mini_sample`) and a pre-trained Jurkat deblurring model are included directly in this repository.
+A sample dataset (`jurkat_mini_sample`) and a pre-trained Jurkat deblurring model are included directly in this repository for out-of-the-box demonstration.
 
 ### Included Demo Assets
-* **Pre-trained Model ($G_A: \text{Blur} \to \text{Sharp}$)**: [`./checkpoints/jurkat_bcgan/latest_net_G_A.pth`](file:///d:/BCGAN/checkpoints/jurkat_bcgan/latest_net_G_A.pth)
-* **Demo Test Images**: [`./datasets/jurkat_mini_sample/testA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/testA/) (6 microfluidic blurred cell images)
+* **Pre-trained Model ($G_A: \text{Blur} \to \text{Sharp}$)**: [`checkpoints/jurkat_bcgan/latest_net_G_A.pth`](checkpoints/jurkat_bcgan/latest_net_G_A.pth)
+* **Demo Test Images**: [`datasets/jurkat_mini_sample/testA/`](datasets/jurkat_mini_sample/testA/) (6 microfluidic blurred cell images)
 
 ### Running Demo Inference
 
-#### GPU Mode (Default):
-```powershell
-python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/testA" `
-  --checkpoints_dir "./checkpoints" `
-  --name jurkat_bcgan `
-  --model test `
-  --model_suffix _A `
-  --input_nc 1 `
-  --output_nc 1 `
-  --no_dropout `
-  --results_dir "./results" `
-  --epoch latest `
+#### Standard Bash (Linux / macOS):
+```bash
+python test.py \
+  --dataroot "./datasets/jurkat_mini_sample/testA" \
+  --checkpoints_dir "./checkpoints" \
+  --name jurkat_bcgan \
+  --model test \
+  --model_suffix _A \
+  --input_nc 1 \
+  --output_nc 1 \
+  --no_dropout \
+  --results_dir "./results" \
+  --epoch latest \
   --gpu_ids 0
 ```
 
-#### CPU Mode (No GPU required):
+#### Windows PowerShell (Single-Line Command):
 ```powershell
-python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/testA" `
-  --checkpoints_dir "./checkpoints" `
-  --name jurkat_bcgan `
-  --model test `
-  --model_suffix _A `
-  --input_nc 1 `
-  --output_nc 1 `
-  --no_dropout `
-  --results_dir "./results" `
-  --epoch latest `
-  --gpu_ids -1
+python test.py --dataroot "./datasets/jurkat_mini_sample/testA" --checkpoints_dir "./checkpoints" --name jurkat_bcgan --model test --model_suffix _A --input_nc 1 --output_nc 1 --no_dropout --results_dir "./results" --epoch latest --gpu_ids 0
 ```
+*(For CPU-only inference, set `--gpu_ids -1`)*
 
 ### Expected Output
 * **Console Output**:
   ```text
-  loading the model from ./checkpoints\jurkat_bcgan\latest_net_G_A.pth
+  loading the model from ./checkpoints/jurkat_bcgan/latest_net_G_A.pth
   processing (0000)-th image...
   processing (0005)-th image...
   ```
-* **Restored Images**: Saved in [`./results/jurkat_bcgan/test_latest/images/`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/images/)
+* **Restored Images**: Saved in `./results/jurkat_bcgan/test_latest/images/`
   * `*_real.png`: Original blurred input image.
   * `*_fake.png`: Restored in-focus cell image.
-* **HTML Summary**: Generated at [`./results/jurkat_bcgan/test_latest/index.html`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/index.html).
+* **HTML Summary**: Generated at `./results/jurkat_bcgan/test_latest/index.html`.
 
 ### Expected Run Time
-* **GPU (RTX 4090)**: ~2–4 seconds for 6 images.
-* **CPU (Intel i7)**: ~15–25 seconds for 6 images.
+* **End-to-End Demo Execution**: **~2–3 seconds** on an ordinary desktop (including Python/PyTorch cold-start, model weights loading, and disk I/O for the 6 demo cell images).
+* **Pure Network Inference Latency (as reported in Section 4.7)**: Measured on an NVIDIA GeForce RTX 4090 GPU (batch size 4), BCGAN achieves a mean network inference latency of **0.48 ± 0.01 ms per image** (equivalent to **2,087 ± 49 frames/s**), fulfilling real-time throughput requirements for microfluidic imaging flow cytometry.
 
 ---
 
@@ -136,27 +126,27 @@ python test.py `
    └── testA/           # Blurred cell images for inference (Domain A)
    ```
 2. Run training:
-   ```powershell
-   python train.py `
-     --dataroot "./datasets/jurkat_mini_sample" `
-     --mask_dataroot "./datasets/jurkat_mini_sample/masks_visible" `
-     --name jurkat_bcgan `
-     --model cycle_gan `
-     --display_id 1 `
-     --batch_size 1 `
-     --input_nc 1 `
-     --output_nc 1 `
-     --lr 0.0002 `
-     --lambda_physics 1.5 `
-     --physics_kernels 15,20,23,27 `
-     --weight_dice 1.0 `
-     --weight_proj 1.5 `
-     --phys_warmup_start 0 `
-     --phys_warmup_end 3 `
-     --phys_decay_start 100 `
-     --phys_decay_end 200 `
-     --n_epochs 100 `
-     --n_epochs_decay 100 `
+   ```bash
+   python train.py \
+     --dataroot "./datasets/jurkat_mini_sample" \
+     --mask_dataroot "./datasets/jurkat_mini_sample/masks_visible" \
+     --name jurkat_bcgan \
+     --model cycle_gan \
+     --display_id 1 \
+     --batch_size 1 \
+     --input_nc 1 \
+     --output_nc 1 \
+     --lr 0.0002 \
+     --lambda_physics 1.5 \
+     --physics_kernels 15,20,23,27 \
+     --weight_dice 1.0 \
+     --weight_proj 1.5 \
+     --phys_warmup_start 0 \
+     --phys_warmup_end 3 \
+     --phys_decay_start 100 \
+     --phys_decay_end 200 \
+     --n_epochs 100 \
+     --n_epochs_decay 100 \
      --gpu_ids 0
    ```
 

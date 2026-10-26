@@ -21,7 +21,7 @@
   * Python >= 3.10
   * PyTorch >= 2.0.0
   * Torchvision >= 0.15.0
-  * 其余依赖见 [`requirements.txt`](file:///d:/BCGAN/requirements.txt)
+  * 其余依赖见 [`requirements.txt`](requirements.txt)
 
 ### 测试与实验硬件环境 (Hardware Tested)
 * **论文训练与主要实验工作站配置**：
@@ -54,67 +54,57 @@ pip install -r requirements.txt
 ```
 
 ### 预估安装时间 (Typical Install Time)
-* 在常规桌面电脑及正常宽带下，完整安装过程约需 **5–10 分钟**。
+* 在常规桌面电脑及正常网络环境下，完整安装过程约需 **5–10 分钟**。
 
 ---
 
 ## 3. 演示教程 (Demo)
 
-代码库内已内置**样本数据集**（`jurkat_mini_sample`）及**预训练去模糊模型**。
+代码库内已内置**样本数据集**（`jurkat_mini_sample`）及**预训练去模糊模型**，支持开箱即用快速验证。
 
 ### 内置演示资产
-* **预训练模型 ($G_A: \text{模糊} \to \text{清晰}$)**：[`./checkpoints/jurkat_bcgan/latest_net_G_A.pth`](file:///d:/BCGAN/checkpoints/jurkat_bcgan/latest_net_G_A.pth)
-* **演示测试图像**：[`./datasets/jurkat_mini_sample/testA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/testA/) (6 张微流控运动模糊单细胞明场图)
+* **预训练模型 ($G_A: \text{模糊} \to \text{清晰}$)**：[`checkpoints/jurkat_bcgan/latest_net_G_A.pth`](checkpoints/jurkat_bcgan/latest_net_G_A.pth)
+* **演示测试图像**：[`datasets/jurkat_mini_sample/testA/`](datasets/jurkat_mini_sample/testA/) (6 张微流控运动模糊单细胞明场图)
 
 ### 运行演示推理
 
-#### 方式一：GPU 运行（默认推荐）
-```powershell
-python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/testA" `
-  --checkpoints_dir "./checkpoints" `
-  --name jurkat_bcgan `
-  --model test `
-  --model_suffix _A `
-  --input_nc 1 `
-  --output_nc 1 `
-  --no_dropout `
-  --results_dir "./results" `
-  --epoch latest `
+#### 标准终端模式（Linux / macOS Bash）：
+```bash
+python test.py \
+  --dataroot "./datasets/jurkat_mini_sample/testA" \
+  --checkpoints_dir "./checkpoints" \
+  --name jurkat_bcgan \
+  --model test \
+  --model_suffix _A \
+  --input_nc 1 \
+  --output_nc 1 \
+  --no_dropout \
+  --results_dir "./results" \
+  --epoch latest \
   --gpu_ids 0
 ```
 
-#### 方式二：纯 CPU 运行（无需显卡）
+#### Windows PowerShell 快捷单行指令：
 ```powershell
-python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/testA" `
-  --checkpoints_dir "./checkpoints" `
-  --name jurkat_bcgan `
-  --model test `
-  --model_suffix _A `
-  --input_nc 1 `
-  --output_nc 1 `
-  --no_dropout `
-  --results_dir "./results" `
-  --epoch latest `
-  --gpu_ids -1
+python test.py --dataroot "./datasets/jurkat_mini_sample/testA" --checkpoints_dir "./checkpoints" --name jurkat_bcgan --model test --model_suffix _A --input_nc 1 --output_nc 1 --no_dropout --results_dir "./results" --epoch latest --gpu_ids 0
 ```
+*(如需纯 CPU 模式运行，将 `--gpu_ids 0` 改为 `--gpu_ids -1` 即可)*
 
 ### 预期输出 (Expected Output)
 * **控制台输出日志**：
   ```text
-  loading the model from ./checkpoints\jurkat_bcgan\latest_net_G_A.pth
+  loading the model from ./checkpoints/jurkat_bcgan/latest_net_G_A.pth
   processing (0000)-th image...
   processing (0005)-th image...
   ```
-* **去模糊恢复图像**：保存在 [`./results/jurkat_bcgan/test_latest/images/`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/images/)
+* **去模糊恢复图像**：保存在 `./results/jurkat_bcgan/test_latest/images/`
   * `*_real.png`：输入的微流控模糊细胞原图。
   * `*_fake.png`：恢复后的清晰细胞图像。
-* **交互式 HTML 报告**：自动生成于 [`./results/jurkat_bcgan/test_latest/index.html`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/index.html)。
+* **交互式 HTML 报告**：自动生成于 `./results/jurkat_bcgan/test_latest/index.html`。
 
 ### 预期演示运行耗时 (Expected Run Time)
-* **GPU (RTX 4090)**：处理 6 张测试图像约 **2–4 秒**。
-* **CPU (Intel i7)**：处理 6 张测试图像约 **15–25 秒**。
+* **端到端 Demo 实际执行耗时 (Wall-Clock Time)**：普通电脑约 **2–3 秒**（包含 Python 解释器冷启动、PyTorch 与模型权重加载、以及 6 张图像的磁盘读写后处理）。
+* **纯网络推理理论延迟 (对应论文 Section 4.7 实验结果)**：在 NVIDIA GeForce RTX 4090 GPU（Batch Size 4）上，BCGAN 平均单张图像网络推理耗时仅为 **0.48 ± 0.01 ms**（相当于吞吐量 **2,087 ± 49 帧/秒**），完全满足微流控成像流式的高通量实时在线恢复要求。
 
 ---
 
@@ -137,27 +127,27 @@ python test.py `
    └── testA/           # 测试单细胞明场图 (域 A)
    ```
 2. 运行训练：
-   ```powershell
-   python train.py `
-     --dataroot "./datasets/jurkat_mini_sample" `
-     --mask_dataroot "./datasets/jurkat_mini_sample/masks_visible" `
-     --name jurkat_bcgan `
-     --model cycle_gan `
-     --display_id 1 `
-     --batch_size 1 `
-     --input_nc 1 `
-     --output_nc 1 `
-     --lr 0.0002 `
-     --lambda_physics 1.5 `
-     --physics_kernels 15,20,23,27 `
-     --weight_dice 1.0 `
-     --weight_proj 1.5 `
-     --phys_warmup_start 0 `
-     --phys_warmup_end 3 `
-     --phys_decay_start 100 `
-     --phys_decay_end 200 `
-     --n_epochs 100 `
-     --n_epochs_decay 100 `
+   ```bash
+   python train.py \
+     --dataroot "./datasets/jurkat_mini_sample" \
+     --mask_dataroot "./datasets/jurkat_mini_sample/masks_visible" \
+     --name jurkat_bcgan \
+     --model cycle_gan \
+     --display_id 1 \
+     --batch_size 1 \
+     --input_nc 1 \
+     --output_nc 1 \
+     --lr 0.0002 \
+     --lambda_physics 1.5 \
+     --physics_kernels 15,20,23,27 \
+     --weight_dice 1.0 \
+     --weight_proj 1.5 \
+     --phys_warmup_start 0 \
+     --phys_warmup_end 3 \
+     --phys_decay_start 100 \
+     --phys_decay_end 200 \
+     --n_epochs 100 \
+     --n_epochs_decay 100 \
      --gpu_ids 0
    ```
 
