@@ -14,14 +14,18 @@ dist/
 *.egg-info/
 
 # PyTorch / Deep Learning Checkpoints & Weights
-checkpoints/
+checkpoints/*
+!checkpoints/jurkat_bcgan/
+checkpoints/jurkat_bcgan/*
+!checkpoints/jurkat_bcgan/latest_net_G_A.pth
 results/
 *.pt
-*.pth
 *.t7
 
 # Datasets & Large Experimental Data
-datasets/
+datasets/*
+!datasets/demo_sample/
+!datasets/jurkat_mini_sample/
 *.tif
 *.tiff
 
