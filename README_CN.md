@@ -64,14 +64,14 @@ pip install -r requirements.txt
 
 ### 内置演示资产
 * **预训练模型 ($G_A: \text{模糊} \to \text{清晰}$)**：[`./checkpoints/jurkat_bcgan/latest_net_G_A.pth`](file:///d:/BCGAN/checkpoints/jurkat_bcgan/latest_net_G_A.pth)
-* **样本图像**：[`./datasets/jurkat_mini_sample/trainA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/trainA/) (微流控运动模糊单细胞明场图)
+* **演示测试图像**：[`./datasets/jurkat_mini_sample/testA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/testA/) (6 张微流控运动模糊单细胞明场图)
 
 ### 运行演示推理
 
 #### 方式一：GPU 运行（默认推荐）
 ```powershell
 python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/trainA" `
+  --dataroot "./datasets/jurkat_mini_sample/testA" `
   --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
   --model test `
@@ -79,7 +79,6 @@ python test.py `
   --input_nc 1 `
   --output_nc 1 `
   --no_dropout `
-  --num_test 10 `
   --results_dir "./results" `
   --epoch latest `
   --gpu_ids 0
@@ -88,7 +87,7 @@ python test.py `
 #### 方式二：纯 CPU 运行（无需显卡）
 ```powershell
 python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/trainA" `
+  --dataroot "./datasets/jurkat_mini_sample/testA" `
   --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
   --model test `
@@ -96,7 +95,6 @@ python test.py `
   --input_nc 1 `
   --output_nc 1 `
   --no_dropout `
-  --num_test 10 `
   --results_dir "./results" `
   --epoch latest `
   --gpu_ids -1
@@ -107,7 +105,7 @@ python test.py `
   ```text
   loading the model from ./checkpoints\jurkat_bcgan\latest_net_G_A.pth
   processing (0000)-th image...
-  processing (0009)-th image...
+  processing (0005)-th image...
   ```
 * **去模糊恢复图像**：保存在 [`./results/jurkat_bcgan/test_latest/images/`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/images/)
   * `*_real.png`：输入的微流控模糊细胞原图。
@@ -115,8 +113,8 @@ python test.py `
 * **交互式 HTML 报告**：自动生成于 [`./results/jurkat_bcgan/test_latest/index.html`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/index.html)。
 
 ### 预期演示运行耗时 (Expected Run Time)
-* **GPU (RTX 4090)**：处理 10 张测试图像约 **2–4 秒**。
-* **CPU (Intel i7)**：处理 10 张测试图像约 **15–25 秒**。
+* **GPU (RTX 4090)**：处理 6 张测试图像约 **2–4 秒**。
+* **CPU (Intel i7)**：处理 6 张测试图像约 **15–25 秒**。
 
 ---
 
@@ -135,7 +133,8 @@ python test.py `
    datasets/[数据集名称]/
    ├── trainA/          # 模糊单细胞明场图 (域 A)
    ├── trainB/          # 清晰单细胞图 (目标域 B，非配对)
-   └── masks_visible/   # 针对 trainA 的单细胞掩膜 (用于形态约束)
+   ├── masks_visible/   # 针对 trainA 的单细胞掩膜 (用于形态约束)
+   └── testA/           # 测试单细胞明场图 (域 A)
    ```
 2. 运行训练：
    ```powershell

@@ -59,18 +59,18 @@ pip install -r requirements.txt
 
 ## 3. Demo
 
-A sample mini dataset (`jurkat_mini_sample`) and a pre-trained Jurkat deblurring model are included directly in this repository.
+A sample dataset (`jurkat_mini_sample`) and a pre-trained Jurkat deblurring model are included directly in this repository.
 
 ### Included Demo Assets
 * **Pre-trained Model ($G_A: \text{Blur} \to \text{Sharp}$)**: [`./checkpoints/jurkat_bcgan/latest_net_G_A.pth`](file:///d:/BCGAN/checkpoints/jurkat_bcgan/latest_net_G_A.pth)
-* **Sample Images**: [`./datasets/jurkat_mini_sample/trainA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/trainA/) (microfluidic blurred cell images)
+* **Demo Test Images**: [`./datasets/jurkat_mini_sample/testA/`](file:///d:/BCGAN/datasets/jurkat_mini_sample/testA/) (6 microfluidic blurred cell images)
 
 ### Running Demo Inference
 
 #### GPU Mode (Default):
 ```powershell
 python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/trainA" `
+  --dataroot "./datasets/jurkat_mini_sample/testA" `
   --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
   --model test `
@@ -78,7 +78,6 @@ python test.py `
   --input_nc 1 `
   --output_nc 1 `
   --no_dropout `
-  --num_test 10 `
   --results_dir "./results" `
   --epoch latest `
   --gpu_ids 0
@@ -87,7 +86,7 @@ python test.py `
 #### CPU Mode (No GPU required):
 ```powershell
 python test.py `
-  --dataroot "./datasets/jurkat_mini_sample/trainA" `
+  --dataroot "./datasets/jurkat_mini_sample/testA" `
   --checkpoints_dir "./checkpoints" `
   --name jurkat_bcgan `
   --model test `
@@ -95,7 +94,6 @@ python test.py `
   --input_nc 1 `
   --output_nc 1 `
   --no_dropout `
-  --num_test 10 `
   --results_dir "./results" `
   --epoch latest `
   --gpu_ids -1
@@ -106,7 +104,7 @@ python test.py `
   ```text
   loading the model from ./checkpoints\jurkat_bcgan\latest_net_G_A.pth
   processing (0000)-th image...
-  processing (0009)-th image...
+  processing (0005)-th image...
   ```
 * **Restored Images**: Saved in [`./results/jurkat_bcgan/test_latest/images/`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/images/)
   * `*_real.png`: Original blurred input image.
@@ -114,8 +112,8 @@ python test.py `
 * **HTML Summary**: Generated at [`./results/jurkat_bcgan/test_latest/index.html`](file:///d:/BCGAN/results/jurkat_bcgan/test_latest/index.html).
 
 ### Expected Run Time
-* **GPU (RTX 4090)**: ~2–4 seconds for 10 test images.
-* **CPU (Intel i7)**: ~15–25 seconds for 10 test images.
+* **GPU (RTX 4090)**: ~2–4 seconds for 6 images.
+* **CPU (Intel i7)**: ~15–25 seconds for 6 images.
 
 ---
 
@@ -132,9 +130,10 @@ python test.py `
 1. Organize your training data:
    ```text
    datasets/[dataset_name]/
-   ├── trainA/          # Blurred single-cell images
-   ├── trainB/          # In-focus single-cell images (unpaired)
-   └── masks_visible/   # Corresponding masks for trainA
+   ├── trainA/          # Blurred single-cell images (Domain A)
+   ├── trainB/          # In-focus single-cell images (Domain B, unpaired)
+   ├── masks_visible/   # Corresponding masks for trainA
+   └── testA/           # Blurred cell images for inference (Domain A)
    ```
 2. Run training:
    ```powershell
