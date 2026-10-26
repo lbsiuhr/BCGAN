@@ -14,11 +14,9 @@ Official PyTorch implementation of **BCGAN (Blurred-Morphology-Constrained Cycle
 ## Method Overview
 
 <p align="center">
-  <img src="imgs/BCGAN.png" alt="BCGAN Architecture Overview" width="480">
-</p>
-
-<p align="center">
-  <em>The cycle-consistency loss ($\mathcal{L}_{\text{cc}}$) and blurred-morphology loss ($\mathcal{L}_{\text{bm}}$) provide complementary constraints on image restoration and morphological fidelity.</em>
+  <img src="imgs/BCGAN.png" alt="BCGAN Architecture Overview" width="280">
+  <br>
+  <em>The cycle-consistency loss (<i>L</i><sub>cc</sub>) and blurred-morphology loss (<i>L</i><sub>bm</sub>) provide complementary constraints on image restoration and morphological fidelity.</em>
 </p>
 
 ---

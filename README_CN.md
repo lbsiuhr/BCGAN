@@ -15,11 +15,9 @@
 ## 方法原理与网络架构 (Method Overview)
 
 <p align="center">
-  <img src="imgs/BCGAN.png" alt="BCGAN 算法原理与网络架构" width="480">
-</p>
-
-<p align="center">
-  <em>循环一致性损失（$\mathcal{L}_{\text{cc}}$）与模糊形态学损失（$\mathcal{L}_{\text{bm}}$）形成紧密互补约束，兼顾图像去模糊恢复质感与生物测量形态保真度。</em>
+  <img src="imgs/BCGAN.png" alt="BCGAN 算法原理与网络架构" width="280">
+  <br>
+  <em>循环一致性损失（<i>L</i><sub>cc</sub>）与模糊形态学损失（<i>L</i><sub>bm</sub>）形成紧密互补约束，兼顾图像去模糊恢复质感与生物测量形态保真度。</em>
 </p>
 
 ---
