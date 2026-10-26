@@ -5,7 +5,7 @@
 [![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
 
 Official PyTorch implementation of **BCGAN (Blurred-Morphology-Constrained CycleGAN)** for the paper:  
-**"Motion-blur-tolerant imaging flow cytometry extends the throughput–sensitivity frontier"**
+**"Motion-blur-tolerant imaging flow cytometry"**
 
 [English](README.md) | [中文说明](README_CN.md)
 
@@ -186,14 +186,11 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 7. Citation
 
-```bibtex
-@article{fan2026motion,
-  title={Motion-blur-tolerant imaging flow cytometry extends the throughput--sensitivity frontier},
-  author={Fan, Hangtian and Chen, Jingjing and Zhang, Hongbo and Mao, Yuxin and Wang, Zi and Xin, Chen and Huang, Ziwei and Zhang, Yue and Wang, Xiaojie and Liu, Guangli and others},
-  journal={bioRxiv},
-  year={2026}
-}
-```
+If you find BCGAN useful in your research, please cite:
+
+> **Motion-blur-tolerant imaging flow cytometry** (Manuscript under review).
+
+*Citation details and BibTeX will be updated upon publication.*
 
 ---
 
